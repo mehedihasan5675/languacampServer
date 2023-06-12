@@ -65,16 +65,40 @@ async function run() {
 //***********************
 const usersCollection = client.db("LinguaCamp").collection("users");
 
+//admin middleware
+const verifyAdmin=async(req,res,next)=>{
+    const email=req.decoded.email 
+    const query={email:email}
+    const user=await usersCollection.findOne(query)
+    console.log(user);
+    
+    if(user?.role!=='admin'){
+      
+      
+      return res.status(403).send({error:true,message:'forbidden access hota hei'})
+    }
+    next()
+  }
+
+//Instructor middleware
+const verifyInstructor=async(req,res,next)=>{
+    const email=req.decoded.email 
+    const query={email:email}
+    const user=await usersCollection.findOne(query)
+    console.log(user);
+    
+    if(user?.role!=='instructor'){
+      
+      
+      return res.status(403).send({error:true,message:'forbidden access hota hei'})
+    }
+    next()
+  }
 
 
 
-
-
-
-//*********************************
-//all server routes here
-//******************/
-//get routes
+//**************************all server routes here******************/
+//****get routes*****/
 
 //get all users data
 app.get('/users',async(req,res)=>{
@@ -84,6 +108,11 @@ app.get('/users',async(req,res)=>{
   })
 
 //******************/
+
+
+
+
+
 
 
 //*****************/
