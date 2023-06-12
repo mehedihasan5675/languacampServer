@@ -73,8 +73,44 @@ const usersCollection = client.db("LinguaCamp").collection("users");
 
 //*********************************
 //all server routes here
+//******************/
+//get routes
+
+//get all users data
+app.get('/users',async(req,res)=>{
+    const result=await usersCollection.find().toArray()
+    res.send(result)
+    
+  })
+
+//******************/
 
 
+//*****************/
+//post routes
+
+//when a user logged in .user data will be stored database with this request
+app.post('/user',async(req,res)=>{
+    const newUser=req.body 
+    const query={email: newUser.email}
+    const existingUser= await usersCollection.findOne(query)
+    if(existingUser){
+     return res.send({message:'user already exist!'})
+    }
+    const result=await usersCollection.insertOne(newUser) 
+    res.send(result)
+    console.log(newUser);
+    
+    
+  })
+//******************/
+//jwt token 
+app.post('/jwt',(req,res)=>{
+    const user=req.body
+     
+    const token= jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'2h'})
+    res.send({token})
+  }) 
 //*********************************
 
 
@@ -92,7 +128,7 @@ const usersCollection = client.db("LinguaCamp").collection("users");
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
