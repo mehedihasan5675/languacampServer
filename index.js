@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const express=require('express')
 require('dotenv').config()
@@ -133,6 +133,49 @@ app.post('/user',async(req,res)=>{
     
   })
 //******************/
+
+//******************/
+//all patch routes
+
+//for patch to create admin role
+app.patch('/users/admin/:id',async(req,res)=>{
+  const Id=req.params.id 
+  const filter={_id: new ObjectId(Id)}
+  const updateDoc = {
+    $set: {
+      role: 'admin'
+    },
+  };
+  const result=await usersCollection.updateOne(filter,updateDoc)
+  res.send(result)
+})
+
+
+//for patch to create instructor role
+app.patch('/users/instructor/:id',async(req,res)=>{
+  const Id=req.params.id 
+  const filter={_id: new ObjectId(Id)}
+  const updateDoc = {
+    $set: {
+      role: 'instructor'
+    },
+  };
+  const result=await usersCollection.updateOne(filter,updateDoc)
+  res.send(result)
+})
+
+
+
+
+
+
+
+
+
+
+
+
+//********/
 //jwt token 
 app.post('/jwt',(req,res)=>{
     const user=req.body
