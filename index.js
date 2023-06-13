@@ -101,12 +101,42 @@ const verifyInstructor=async(req,res,next)=>{
 //****get routes*****/
 
 //get all users data
-app.get('/users',async(req,res)=>{
+app.get('/users',verifyJWT,verifyAdmin,async(req,res)=>{
     const result=await usersCollection.find().toArray()
     res.send(result)
     
   })
 
+  //admin role api 
+app.get('/user/admin/:email',verifyJWT,async(req,res)=>{
+  const Email=req.params.email 
+  
+  const query={email:Email}
+  if(Email !== req.decoded.email){
+    res.send({admin:false})
+  }
+  const user=await usersCollection.findOne(query)
+  
+  const result={admin: user?.role === 'admin'}
+  res.send(result)
+  
+})
+
+
+ //instructor role api 
+app.get('/user/instructor/:email',verifyJWT,async(req,res)=>{
+  const Email=req.params.email 
+
+  const query={email:Email}
+  if(Email !== req.decoded.email){
+    res.send({instructor:false})
+  }
+  const user=await usersCollection.findOne(query)
+  
+  const result={instructor: user?.role === 'instructor'}
+  res.send(result)
+  
+})
 //******************/
 
 
@@ -148,6 +178,7 @@ app.patch('/users/admin/:id',async(req,res)=>{
   };
   const result=await usersCollection.updateOne(filter,updateDoc)
   res.send(result)
+  
 })
 
 
@@ -162,6 +193,7 @@ app.patch('/users/instructor/:id',async(req,res)=>{
   };
   const result=await usersCollection.updateOne(filter,updateDoc)
   res.send(result)
+  
 })
 
 
