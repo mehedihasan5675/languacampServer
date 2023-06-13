@@ -138,6 +138,22 @@ app.get('/user/instructor/:email',verifyJWT,async(req,res)=>{
   res.send(result)
   
 })
+
+
+//when instructor go his classes route by clicking add class btn then this route is called
+app.get('/classes/:email',verifyJWT,verifyInstructor,async(req,res)=>{
+  const Email=req.params.email 
+  const query={instructor_email: Email}
+  const result=await classesCollection.find(query).toArray()
+  res.send(result)
+})
+
+//get all classes for all classes page
+
+app.get('/allClasses',verifyJWT,async(req,res)=>{
+  const result=await classesCollection.find().toArray()
+  res.send(result)
+})
 //******************/
 
 
@@ -190,7 +206,30 @@ app.patch('/users/admin/:id',async(req,res)=>{
   
 })
 
-
+//in admin dashboard => manage classes route .when admin click approved btn those class is approved
+app.patch('/class/approve/:id',async(req,res)=>{
+  const Id=req.params.id
+  const filter={_id:new ObjectId(Id)}
+  const updateDoc={
+    $set:{
+      status:'approved'
+    }
+  }
+  const result =await classesCollection.updateOne(filter,updateDoc)
+  res.send(result)
+})
+//in admin dashboard => manage classes route .when admin click approved btn those class is approved
+app.patch('/class/deny/:id',async(req,res)=>{
+  const Id=req.params.id
+  const filter={_id:new ObjectId(Id)}
+  const updateDoc={
+    $set:{
+      status:'denied'
+    }
+  }
+  const result =await classesCollection.updateOne(filter,updateDoc)
+  res.send(result)
+})
 //for patch to create instructor role
 app.patch('/users/instructor/:id',async(req,res)=>{
   const Id=req.params.id 
