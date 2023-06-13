@@ -64,6 +64,7 @@ async function run() {
 //database all collection
 //***********************
 const usersCollection = client.db("LinguaCamp").collection("users");
+const classesCollection = client.db("LinguaCamp").collection("classes");
 
 //admin middleware
 const verifyAdmin=async(req,res,next)=>{
@@ -162,6 +163,14 @@ app.post('/user',async(req,res)=>{
     
     
   })
+
+  //instructor add a class then hit this post route 
+  //add item from instructor dashboard
+app.post('/classes',verifyJWT,verifyInstructor,async(req,res)=>{
+  const newClass=req.body 
+  const result=await classesCollection.insertOne(newClass)
+  res.send(result)
+})
 //******************/
 
 //******************/
