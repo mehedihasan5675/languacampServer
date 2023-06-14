@@ -60,7 +60,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     
-    await client.connect();
+    // await client.connect();
 //database all collection
 //***********************
 const usersCollection = client.db("LinguaCamp").collection("users");
@@ -86,7 +86,6 @@ const verifyInstructor=async(req,res,next)=>{
     const email=req.decoded.email 
     const query={email:email}
     const user=await usersCollection.findOne(query)
-    console.log(user);
     
     if(user?.role!=='instructor'){
       
@@ -150,7 +149,7 @@ app.get('/classes/:email',verifyJWT,verifyInstructor,async(req,res)=>{
 
 //get all classes for all classes page
 
-app.get('/allClasses',verifyJWT,async(req,res)=>{
+app.get('/allClasses',async(req,res)=>{
   const result=await classesCollection.find().toArray()
   res.send(result)
 })
@@ -169,6 +168,14 @@ const query={status:'approved'}
 const result=await classesCollection.find(query).toArray()
 res.send(result)
 })
+
+
+//all selected Classes  data collect from database.and get all selected classes data
+app.get('/selectedClasses',verifyJWT,async(req,res)=>{
+ 
+  const result=await selectedClassesCollection.find().toArray()
+  res.send(result)
+  })
 //******************/
 
 
@@ -204,14 +211,14 @@ app.post('/classes',verifyJWT,verifyInstructor,async(req,res)=>{
 
 
 //classes page data selected classes data post to database.and stored all classes data
-app.post('/selectedClass',async(req,res)=>{
-  const seletedClass=req.body
-  const result=await selectedClassesCollection.insertOne(seletedClass)
+
+//******************/
+app.post('/ClassCart',async(req,res)=>{
+  const item=req.body;
+  const result=await selectedClassesCollection.insertOne(item)
   res.send(result)
   
-  })
-//******************/
-
+})
 //******************/
 //all patch routes
 
@@ -260,8 +267,9 @@ app.post('/class/feedback/:id',async(req,res)=>{
   const feed=req.body
  const Id=req.params.id
   
-  console.log(Id);
-  
+
+ 
+
   const filter={_id:new ObjectId(Id)}
   const updateDoc={
     $set:{
@@ -286,7 +294,16 @@ app.patch('/users/instructor/:id',async(req,res)=>{
   
 })
 
-
+//-------------
+//delete routes
+//********** */
+//user classes delete route
+app.delete('/deleteUserClass/:id',async(req,res)=>{
+const Id=req.params.id 
+const query={_id:new ObjectId(Id)}
+const result=await selectedClassesCollection.deleteOne(query)
+res.send(result)
+})
 
 
 
