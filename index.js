@@ -161,6 +161,14 @@ const query={role:'instructor'}
 const result=await usersCollection.find(query).toArray()
 res.send(result)
 })
+
+
+//all classes page data collect from database.and get all approved classes data
+app.get('/approvedClasses',verifyJWT,async(req,res)=>{
+const query={status:'approved'}
+const result=await classesCollection.find(query).toArray()
+res.send(result)
+})
 //******************/
 
 
@@ -182,7 +190,6 @@ app.post('/user',async(req,res)=>{
     }
     const result=await usersCollection.insertOne(newUser) 
     res.send(result)
-    console.log(newUser);
     
     
   })
@@ -254,7 +261,6 @@ app.post('/class/feedback/:id',async(req,res)=>{
   }
   const result =await classesCollection.updateOne(filter,updateDoc)
   res.send(result)
-  console.log(result);
   
 })
 //for patch to create instructor role
