@@ -65,13 +65,13 @@ async function run() {
 //***********************
 const usersCollection = client.db("LinguaCamp").collection("users");
 const classesCollection = client.db("LinguaCamp").collection("classes");
+const selectedClassesCollection = client.db("LinguaCamp").collection("selectedClasses");
 
 //admin middleware
 const verifyAdmin=async(req,res,next)=>{
     const email=req.decoded.email 
     const query={email:email}
     const user=await usersCollection.findOne(query)
-    console.log(user);
     
     if(user?.role!=='admin'){
       
@@ -201,6 +201,15 @@ app.post('/classes',verifyJWT,verifyInstructor,async(req,res)=>{
   const result=await classesCollection.insertOne(newClass)
   res.send(result)
 })
+
+
+//classes page data selected classes data post to database.and stored all classes data
+app.post('/selectedClass',async(req,res)=>{
+  const seletedClass=req.body
+  const result=await selectedClassesCollection.insertOne(seletedClass)
+  res.send(result)
+  
+  })
 //******************/
 
 //******************/
