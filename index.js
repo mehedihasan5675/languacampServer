@@ -154,6 +154,13 @@ app.get('/allClasses',verifyJWT,async(req,res)=>{
   const result=await classesCollection.find().toArray()
   res.send(result)
 })
+
+//instructor page data collect from database.and get all instructor data
+app.get('/approvedInstructor',verifyJWT,async(req,res)=>{
+const query={role:'instructor'}
+const result=await usersCollection.find(query).toArray()
+res.send(result)
+})
 //******************/
 
 
@@ -229,6 +236,26 @@ app.patch('/class/deny/:id',async(req,res)=>{
   }
   const result =await classesCollection.updateOne(filter,updateDoc)
   res.send(result)
+})
+
+
+//in admin dashboard => manage classes route .when admin click approved btn those class is approved
+app.post('/class/feedback/:id',async(req,res)=>{
+  const feed=req.body
+ const Id=req.params.id
+  
+  console.log(Id);
+  
+  const filter={_id:new ObjectId(Id)}
+  const updateDoc={
+    $set:{
+      feedback:feed.feedbk
+    }
+  }
+  const result =await classesCollection.updateOne(filter,updateDoc)
+  res.send(result)
+  console.log(result);
+  
 })
 //for patch to create instructor role
 app.patch('/users/instructor/:id',async(req,res)=>{
