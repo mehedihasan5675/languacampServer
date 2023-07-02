@@ -1,0 +1,25 @@
+[debug] [2023-06-14T18:22:21.988Z] ----------------------------------------------------------------------
+[debug] [2023-06-14T18:22:21.992Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\SmartView\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2023-06-14T18:22:21.993Z] CLI Version:   12.3.1
+[debug] [2023-06-14T18:22:21.993Z] Platform:      win32
+[debug] [2023-06-14T18:22:21.993Z] Node Version:  v18.12.1
+[debug] [2023-06-14T18:22:22.005Z] Time:          Thu Jun 15 2023 00:22:21 GMT+0600 (Bangladesh Standard Time)
+[debug] [2023-06-14T18:22:22.005Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-06-14T18:22:22.014Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-06-14T18:22:22.015Z] > authorizing via signed-in user (mdmehedihasanchanchal04@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Public\Mehedi_Hasan\projects_hero\milestone-12\assignment-12\summer-camp-school\server-spoking-summer
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+

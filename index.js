@@ -7,7 +7,7 @@ const cors=require('cors')
 const app=express()
 const port=process.env.PORT || 7000
 
-
+const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY)
 //==================
 //middleware
 app.use(cors())
@@ -64,6 +64,7 @@ async function run() {
 //database all collection
 //***********************
 const usersCollection = client.db("LinguaCamp").collection("users");
+const paymentsCollection = client.db("LinguaCamp").collection("payments");
 const classesCollection = client.db("LinguaCamp").collection("classes");
 const selectedClassesCollection = client.db("LinguaCamp").collection("selectedClasses");
 
@@ -154,28 +155,42 @@ app.get('/allClasses',async(req,res)=>{
   res.send(result)
 })
 
+
+
 //instructor page data collect from database.and get all instructor data
-app.get('/approvedInstructor',verifyJWT,async(req,res)=>{
+app.get('/approvedInstructor',async(req,res)=>{
 const query={role:'instructor'}
+
 const result=await usersCollection.find(query).toArray()
 res.send(result)
 })
 
 
 //all classes page data collect from database.and get all approved classes data
-app.get('/approvedClasses',verifyJWT,async(req,res)=>{
+app.get('/approvedClasses',async(req,res)=>{
 const query={status:'approved'}
-const result=await classesCollection.find(query).toArray()
+const options={
+  sort:{'total_enrolled':-1}
+}
+const result=await classesCollection.find(query,options).toArray()
 res.send(result)
 })
 
 
 //all selected Classes  data collect from database.and get all selected classes data
-app.get('/selectedClasses',verifyJWT,async(req,res)=>{
+app.get('/selectedClasses',async(req,res)=>{
  
   const result=await selectedClassesCollection.find().toArray()
   res.send(result)
   })
+
+
+  //payment classes get
+  app.get('/paymentClasses',async(req,res)=>{
+ 
+    const result=await paymentsCollection.find().toArray()
+    res.send(result)
+    })
 //******************/
 
 
@@ -293,7 +308,23 @@ app.patch('/users/instructor/:id',async(req,res)=>{
   res.send(result)
   
 })
-
+//seat and enrolled updated
+app.patch('/reduce_increase/:id',async(req,res)=>{
+  const id=req.params.id 
+  const filter={_id:new ObjectId(id)}
+  // const options = { upsert: true }
+  // console.log(id);
+  
+  const updateDoc={
+   $inc:{
+    available_seats:-1,
+    total_enrolled:1
+   }
+    
+  }
+  const updateResult=await classesCollection.updateOne(filter,updateDoc)
+  res.send(updateResult)
+})
 //-------------
 //delete routes
 //********** */
@@ -306,12 +337,45 @@ res.send(result)
 })
 
 
+//delete instructor from admin dashboard
+app.delete('/deleteInstructor/:id',verifyJWT,verifyAdmin,async(req,res)=>{
+  const id=req.params.id 
+  console.log(id);
+  
+  const query={_id:new ObjectId(id)}
+  const deleteResult=await usersCollection.deleteOne(query)
+  res.send(deleteResult)
+} )
 
 
+//create payment intent
+app.post('/create-payment-intent',verifyJWT,async(req,res)=>{
+   const {price}=req.body 
+   const amount=parseInt(price*100)
+   
+   const paymentIntent= await stripe.paymentIntents.create({
+    amount:amount,
+    currency:'USD',
+    payment_method_types:['card']
+   })
+   
+   res.send({clientSecret: paymentIntent.client_secret})
+})
 
+//payments post 
+app.post('/payments',verifyJWT,async(req,res)=>{
+  const payment=req.body 
+  const insertResult=await paymentsCollection.insertOne(payment)
+  const query={_id: new ObjectId(payment.selectedClass_id)}
+  // const filter={class_page_id:new ObjectId(payment.class_page_id)}
+  const deleteResult=await selectedClassesCollection. deleteOne(query)
+ 
+//   const updateResult=await classesCollection.updateOne(filter,{ class_page_id: payment.class_page_id },
+//   {$inc: { available_seats: -1 }},
+//  { $inc: { total_enrolled: 1 } })
 
-
-
+  res.send({insertResult,deleteResult})
+})
 
 
 //********/
